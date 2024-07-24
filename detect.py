@@ -33,6 +33,10 @@ import csv
 import os
 import platform
 import sys
+import random
+import time
+import numpy as np
+import math
 from pathlib import Path
 
 import torch
@@ -63,7 +67,30 @@ from utils.general import (
     strip_optimizer,
     xyxy2xywh,
 )
-from utils.torch_utils import select_device, smart_inference_mode
+from utils.torch_utils import select_device, smart_inference_mode, time_sync
+
+
+def takeSecond(elem):
+    return elem[1]
+
+
+def to_sublists(lst, length = 2):
+    return [lst[i:i+length] for i in range(0,(len(lst)+1-length),2)]
+
+
+def rgb(img):
+
+    img_1 = np.array(img, dtype=np.float32) / 255.0
+    (b, g, r) = cv2.split(img_1)
+    gray = 2 * g - 1 * b - 1 * r
+    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
+    gray_u8 = np.array((gray - minVal) / (maxVal - minVal) * 255, dtype=np.uint8)
+    (thresh, img_2) = cv2.threshold(gray_u8, -1.0, 255, cv2.THRESH_OTSU)
+    element_1 = np.array([[0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]], dtype=np.uint8)
+    img_3 = cv2.erode(img_2, element_1, iterations=2)
+    img_4 = cv2.dilate(img_3, element_1, iterations=4)
+
+    return img_4
 
 
 @smart_inference_mode()
@@ -153,6 +180,7 @@ def run(
     is_url = source.lower().startswith(("rtsp://", "rtmp://", "http://", "https://"))
     webcam = source.isnumeric() or source.endswith(".streams") or (is_url and not is_file)
     screenshot = source.lower().startswith("screen")
+
     if is_url and is_file:
         source = check_file(source)  # download
 
@@ -166,7 +194,7 @@ def run(
     stride, names, pt = model.stride, model.names, model.pt
     imgsz = check_img_size(imgsz, s=stride)  # check image size
 
-    # Dataloader
+    # Set Dataloader
     bs = 1  # batch_size
     if webcam:
         view_img = check_imshow(warn=True)
@@ -176,6 +204,7 @@ def run(
         dataset = LoadScreenshots(source, img_size=imgsz, stride=stride, auto=pt)
     else:
         dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)
+
     vid_path, vid_writer = [None] * bs, [None] * bs
 
     # Run inference
@@ -201,12 +230,17 @@ def run(
                         pred = model(image, augment=augment, visualize=visualize).unsqueeze(0)
                     else:
                         pred = torch.cat((pred, model(image, augment=augment, visualize=visualize).unsqueeze(0)), dim=0)
+                
+                t1 = time_sync()  # them code
                 pred = [pred, None]
             else:
+                t1 = time_sync()  # them code
                 pred = model(im, augment=augment, visualize=visualize)
-        # NMS
+
+        # Apply NMS
         with dt[2]:
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
+            t2 = time_sync()    # them code
 
         # Second-stage classifier (optional)
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
@@ -227,6 +261,7 @@ def run(
         # Process predictions
         for i, det in enumerate(pred):  # per image
             seen += 1
+
             if webcam:  # batch_size >= 1
                 p, im0, frame = path[i], im0s[i].copy(), dataset.count
                 s += f"{i}: "
@@ -240,6 +275,7 @@ def run(
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
@@ -248,7 +284,12 @@ def run(
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-
+                
+                # Them code
+                start = time.time()
+                xyxy_list = []
+                im1 = im0.copy()                
+                
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
@@ -269,8 +310,105 @@ def run(
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f"{names[c]} {conf:.2f}")
                         annotator.box_label(xyxy, label, color=colors(c, True))
+                    
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / "crops" / names[c] / f"{p.stem}.jpg", BGR=True)
+                    
+                    # Them code
+                    xyxy_list.extend(xyxy)
+
+            # Them code time of (inference + NMS)
+            print(f'{s}Done. ({t2 - t1:.3f}s)')                
+
+            def fast(img, x, y, draw=True):
+                flag = True
+                fast = cv2.FastFeatureDetector_create(30)
+                fast.setNonmaxSuppression(False) #NMS
+                kp = fast.detect(img, None)
+                left = []
+                right = []
+                kp = cv2.KeyPoint_convert(kp)
+                for i in kp:
+                    if i[0] > x:
+                        right.append(i)
+                    elif i[0] < x:
+                        left.append(i)
+                    else:
+                        pass
+
+                left = np.array(left)
+                right = np.array(right)
+
+                try:
+                    [vx_middle_line, vy_middle_line, x_middle_line, y_middle_line] = cv2.fitLine(left, cv2.DIST_HUBER, 0,
+                                                                                                     1e-2, 1e-2)
+                    k = vy_middle_line / vx_middle_line
+                    if k == 0:
+                        k = k + 0.0001
+                    b = y_middle_line - k * x_middle_line
+                except:
+                    pass
+
+                try:
+                    [vx_middle_line1, vy_middle_line1, x_middle_line1, y_middle_line1] = cv2.fitLine(right,
+                                        cv2.DIST_HUBER, 0, 1e-2, 1e-2)
+                    k1 = vy_middle_line1 / vx_middle_line1
+                    if k1 == 0:
+                        k1 = k1 + 0.0001
+                    b1 = y_middle_line1 - k1 * x_middle_line1
+                except:
+                    pass
+
+                try:
+                    x1 = (int(((y - b) / k + (y - b1) / k1) / 2))
+                    y1 = y
+                    x2 = (int(((360 - b) / k + (360 - b1) / k1) / 2))
+                    y2 = h
+                    PI = math.pi
+
+                    if (x2 - x1) != 0:
+                        k_mid = (y2 - y1) / (x2 - x1)
+                    else:
+                        k_mid = (y2 - y1) / 0.01
+
+                    ceita = (PI / 2 + math.atan(k_mid)) * (180 / PI)
+
+                    if ceita > 100:
+                        ceita = abs(ceita - 180)
+                    if ceita > 10:
+                        flag = False
+
+                    x11 = int((new_lst[0][0] + xyxy_list_sort[0][0]) / 6)
+                    y11 = int(new_lst[0][1] / 3)
+                    x22 = int((xyxy_list_sort[-1][0] + new_lst[-1][0]) / 6)
+                    y22 = int(xyxy_list_sort[-1][1] / 3)
+                    PI = math.pi
+
+                    if (x22 - x11) != 0:
+                        k_m = (y22 - y11) / (x22 - x11)
+                    else:
+                        k_m = (y22 - y11) / 0.01
+
+                    ceita_m = (PI / 2 + math.atan(k_m)) * (180 / PI)
+
+                    if ceita_m > 100:
+                        ceita_m = abs(ceita_m - 180)
+
+                    if ceita_m > 10:
+                        flag = False
+                        
+                    if flag == True:
+                        cv2.line(im1, (int((y - b) / k), y), (int((360 - b) / k), 360), (0, 0, 255), 3)
+                        cv2.line(im1, (int((y - b1) / k1), y), (int((360 - b1) / k1), 360), (0, 0, 255), 3)
+                        cv2.line(im1, (int(((y - b) / k + (y - b1) / k1) / 2), y),
+                                           (int(((360 - b) / k + (360 - b1) / k1) / 2), 360),
+                                           (0, 255, 255), 3)
+
+                        cv2.polylines(im1, [c], True, (255, 0, 0), 3)
+                except:
+                    pass
+
+                return im0        
 
             # Stream results
             im0 = annotator.result()
@@ -289,29 +427,80 @@ def run(
                 else:  # 'video' or 'stream'
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
+                        
                         if isinstance(vid_writer[i], cv2.VideoWriter):
                             vid_writer[i].release()  # release previous video writer
+                        
                         if vid_cap:  # video
                             fps = vid_cap.get(cv2.CAP_PROP_FPS)
                             w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         else:  # stream
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
+                        
                         save_path = str(Path(save_path).with_suffix(".mp4"))  # force *.mp4 suffix on results videos
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
-                    vid_writer[i].write(im0)
+                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))                
+
+                    # them code
+                    h0 = im0.shape[0]
+                    w0 = im0.shape[1]
+
+                    im0 = cv2.resize(im0, (640, 360))
+                    im1 = cv2.resize(im1, (640, 360))
+                    xyxy_list_sort = to_sublists(xyxy_list)
+                    
+                    new_lst = []
+                    for i in range(len(xyxy_list_sort)):
+                        if i % 2 == 0:
+                            new_lst.append(xyxy_list_sort[i])
+
+                    new_lst.sort(key=takeSecond)
+                    for i in range(len(xyxy_list_sort)):
+                        for j in xyxy_list_sort:
+                            if j in new_lst:
+                                xyxy_list_sort.remove(j)
+
+                    xyxy_list_sort.sort(key=takeSecond)
+
+                    c = np.array(
+                        [[int(new_lst[0][0] / (h0 / 360)), int(new_lst[0][1]) / (h0 / 360)],
+                         [int(xyxy_list_sort[0][0] / (h0 / 360)),
+                          int(new_lst[0][1]) / (h0 / 360)],
+                         [int(xyxy_list_sort[-1][0] / (w0 / 640)), int(xyxy_list_sort[-1][1] / (w0 / 640))],
+                         [int(new_lst[-1][0] / (w0 / 640)), int(xyxy_list_sort[-1][1] / (w0 / 640))]], np.int32)
+
+                    roi_mask = np.zeros((360, 640), dtype=np.uint8)
+                    cv2.fillPoly(roi_mask, [c], 255)
+                    roi = cv2.bitwise_and(im0, im0, mask=roi_mask)
+                    roi = rgb(roi)
+
+                    fast(roi, int((new_lst[0][0] + xyxy_list_sort[0][0]) / (w0 / 320)), int(new_lst[0][1] / (h0 / 360)))
+
+                    im1 = cv2.resize(im1, (640, 360))
+                    print('###################')
+                    end = time.time()
+                    cv2.imshow(str(p), im1)
+
+                    if cv2.waitKey(1) == ord('q'):
+                        break
+                    
+                    # vid_writer[i].write(im0)
 
         # Print time (inference-only)
-        LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
+        # LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
 
     # Print results
-    t = tuple(x.t / seen * 1e3 for x in dt)  # speeds per image
-    LOGGER.info(f"Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}" % t)
+    # t = tuple(x.t / seen * 1e3 for x in dt)  # speeds per image
+    # LOGGER.info(f"Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}" % t)
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ""
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
+    
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
+    
+    # them code
+    print(f'Done. ({end - start}s)')
 
 
 def parse_opt():
