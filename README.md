@@ -52,12 +52,14 @@ Thanks to the contribution, the code is based on https://github.com/ultralytics/
 
 If you find this code useful to your research, please cite our paper in the following BibTeX:
 
-@article{yang2023real,
-  title={Real-time detection of crop rows in maize fields based on autonomous extraction of ROI},
-  author={Yang, Yang and Zhou, Yang and Yue, Xuan and Zhang, Gang and Wen, Xing and Ma, Biao and Xu, Liangyuan and Chen, Liqing},
-  journal={Expert Systems with Applications},
-  volume={213},
-  pages={118826},
-  year={2023},
-  publisher={Elsevier}
-}
+    @article{yang2023real,
+      title={Real-time detection of crop rows in maize fields based on autonomous extraction of ROI},
+      author={Yang, Yang and Zhou, Yang and Yue, Xuan and Zhang, Gang and Wen, Xing and Ma, Biao and Xu, Liangyuan and Chen, Liqing},
+      journal={Expert Systems with Applications},
+      volume={213},
+      pages={118826},
+      year={2023},
+      publisher={Elsevier}
+    }
+
+
