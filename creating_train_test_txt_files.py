@@ -36,7 +36,7 @@ Setting up full path to directory with labelled images
 # r'C:\Users\my_name\Downloads\video-to-annotate'
 # or:
 # 'C:\\Users\\my_name\\Downloads\\video-to-annotate'
-full_path_to_images = '/content/LettuceMOTS/images'
+full_path_to_images = '/content/yolov5/datasets'
 
 """
 End of:
@@ -70,7 +70,7 @@ p = []
 for current_dir, dirs, files in os.walk('.'):
     for subdir in dirs:
         for x in os.listdir(subdir):
-            if x[-3:] == "png":
+            if x[-3:] == "jpg":
                 path_to_images = os.path.join(subdir, x)
                 path_to_save_into_txt_files = os.path.join(full_path_to_images, path_to_images)
                 p.append(path_to_save_into_txt_files + '\n')
@@ -78,7 +78,7 @@ for current_dir, dirs, files in os.walk('.'):
 
 # Slicing first 15% of elements from the list
 # to write into the val.txt file
-p_val = p[:int(len(p) * 0.15)]
+p_val = p[:int(len(p) * 0.2)]
 
 # Deleting from initial list first 15% of elements
 p = p[int(len(p) * 0.15):]
@@ -95,14 +95,14 @@ Creating train.txt and test.txt files
 """
 
 # Creating file train.txt and writing 85% of lines in it
-with open('/content/LettuceMOTS/data/lettuceseg/train.txt', 'w') as train_txt:
+with open('/content/yolov5/datasets/train.txt', 'w') as train_txt:
     # Going through all elements of the list
     for e in p:
         # Writing current path at the end of the file
         train_txt.write(e)
 
 # Creating file val.txt and writing 15% of lines in it
-with open('/content/LettuceMOTS/data/lettuceseg/val.txt', 'w') as val_txt:
+with open('/content/yolov5/datasets/val.txt', 'w') as val_txt:
     # Going through all elements of the list
     for e in p_val:
         # Writing current path at the end of the file
