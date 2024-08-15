@@ -32,6 +32,25 @@ source ~/.bashrc
 conda activate mlenv
 ```
 
+Clone this repo and install required packages:
+```
+git clone https://github.com/manhhv87/ConvNeXt-V2.git --recursive
+cd yolov5
+pip install -r requirements.txt
+python3 -m pip install --no-cache-dir --user opencv-python
+python3 -m pip install --no-cache-dir --user opencv-python-headless
+conda install git
+conda install gitpython=3.1.30
+cd ~/miniconda3/envs/aienv/lib/python3.9/site-packages/git 
+```
+
+Goto git path:
+```
+cd ~/miniconda3/envs/aienv/lib/python3.9/site-packages/git
+nano __init__.py
+```
+and modify: ```def refresh(path: Optional[PathLike] = None) -> None:``` to `if not Git.refresh(path='~/.conda/envs/mlenv/bin/git'):`
+
 # Architecture
 <div align=center>
 <img width="1113" alt="1702287039880" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/6f859450-be25-4491-8f4a-8ff0b7e41cee">
