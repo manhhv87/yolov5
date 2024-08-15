@@ -49,7 +49,7 @@ Goto git path:
 cd ~/miniconda3/envs/aienv/lib/python3.9/site-packages/git
 nano __init__.py
 ```
-and modify: ```def refresh(path: Optional[PathLike] = None) -> None:``` to `if not Git.refresh(path='~/.conda/envs/mlenv/bin/git'):`
+and modify: `if not Git.refresh(path=path):` in function `def refresh(path: Optional[PathLike] = None) -> None:` to `if not Git.refresh(path='~/.conda/envs/mlenv/bin/git'):`
 
 # Architecture
 <div align=center>
