@@ -4,6 +4,37 @@ It is a crop rows detection method using the object detection model.
 2. 👍Multiple periods: The model is trained on the dataset including various crop row periods.
 3. 🤗High accuracy: The average error angle of the detection lines is 1.88◦, which can meet the accuracy requirements of field navigation.
 
+# Installation
+
+We provide installation instructions for ImageNet classification experiments here.
+
+## Dependency Setup
+
+Create docker [Pytorch](https://pytorch.org/)>=1.8.0, [torchvision](https://pytorch.org/vision/stable/index.html)>=0.9.0. For example:
+```
+module load singularity
+singularity cache clean
+singularity pull pytorch_1.9.1-cuda11.1-cudnn8-runtime.sif docker://pytorch/pytorch:1.9.1-cuda11.1-cudnn8-runtime
+```
+
+Create an new conda virtual environment
+```
+module load /opt/hpc/modulefiles/python/anaconda3
+conda create -n mlenv python=3.9 -y
+conda init bash
+conda activate mlenv
+
+conda config --add channels conda-forge
+conda config --show channels
+```
+Add `PYTHONPATH` environment variable.
+```
+nano ~/.bashrc
+export PYTHONPATH="${PYTHONPATH}:$HOME/.conda/envs/mlenv/lib/python3.9/site-packages/"
+source ~/.bashrc
+conda activate mlenv
+```
+
 # Architecture
 <div align=center>
 <img width="1113" alt="1702287039880" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/6f859450-be25-4491-8f4a-8ff0b7e41cee">
