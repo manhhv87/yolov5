@@ -73,7 +73,7 @@ module load singularity
 singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cudnn8.3.2_0_ubuntu20.04.sif python3 /home/hanh.buithi/pytorch/yolov5/train.py
 ```
 
-# Training custom model
+# Training
 
 Run bash file
 ```
