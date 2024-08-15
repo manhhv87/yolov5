@@ -74,7 +74,7 @@ singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cud
 ```
 
 # Preparing dataset
-## Formating dataset
+The database is organized as follows:
 ```
 yolov5
   datasets
@@ -86,6 +86,11 @@ yolov5
       img0.txt
       img1.txt
       ...
+```
+
+Create `train.txt` and `val.txt`:
+```
+python creating_train_test_txt_files.py
 ```
 
 # Training
