@@ -74,11 +74,16 @@ singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cud
 ```
 
 # Preparing dataset
+## Formating dataset
 ```
   datasets
       images
           img0.jpg
           img1.jpg
+          ...
+      labels
+          img0.txt
+          img1.txt
           ...
 ```
 
