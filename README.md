@@ -14,7 +14,7 @@ Create docker [Pytorch](https://pytorch.org/)>=1.8.0, [torchvision](https://pyto
 ```
 module load singularity
 singularity cache clean
-singularity pull pytorch_1.9.1-cuda11.1-cudnn8-runtime.sif docker://pytorch/pytorch:1.9.1-cuda11.1-cudnn8-runtime
+-	singularity pull --name pytorch_1.11.0_py3.9_cuda11.5_cudnn8.3.2_0_ubuntu20.04.sif docker://anibali/pytorch:1.11.0-cuda11.5
 ```
 
 Create an new conda virtual environment
