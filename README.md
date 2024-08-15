@@ -74,9 +74,6 @@ singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cud
 ```
 
 # Training custom model
-<div align=center>
-<img width="1113" alt="1702287039880" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/6f859450-be25-4491-8f4a-8ff0b7e41cee">
-</div>
 
 Run bash file
 ```
