@@ -51,28 +51,6 @@ nano __init__.py
 ```
 and modify: ```if not Git.refresh(path=path):``` in function ```def refresh(path: Optional[PathLike] = None) -> None:``` to ```if not Git.refresh(path='~/.conda/envs/mlenv/bin/git'):```
 
-Create `submit.sh` with content:
-```
-#! /bin/bash
-
-#SBATCH --job-name=MJ
-#SBATCH --partition=gpu
-#SBATCH --ntasks=1
-#SBATCH --nodes=1
-#SBATCH --chdir=/home/hanh.buithi/pytorch/yolov5
-#SBATCH --gres=gpu:1
-#SBATCH --time=72:00:00
-#SBATCH --tasks-per-node=1
-
-#SBATCH -o slurm.%N.%J.%u.out # STDOUT
-#SBATCH -e slurm.%N.%J.%u.err # STDERR
-
-module load singularity
-
-## Run job
-singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cudnn8.3.2_0_ubuntu20.04.sif python3 /home/hanh.buithi/pytorch/yolov5/train.py
-```
-
 # Preparing dataset
 The database is organized as follows:
 ```
@@ -94,6 +72,27 @@ python creating_train_test_txt_files.py
 ```
 
 # Training
+Create `submit.sh` with content:
+```
+#! /bin/bash
+
+#SBATCH --job-name=MJ
+#SBATCH --partition=gpu
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --chdir=/home/hanh.buithi/pytorch/yolov5
+#SBATCH --gres=gpu:1
+#SBATCH --time=72:00:00
+#SBATCH --tasks-per-node=1
+
+#SBATCH -o slurm.%N.%J.%u.out # STDOUT
+#SBATCH -e slurm.%N.%J.%u.err # STDERR
+
+module load singularity
+
+## Run job
+singularity run --nv /home/hanh.buithi/pytorch/pytorch_1.11.0_py3.9_cuda11.5_cudnn8.3.2_0_ubuntu20.04.sif python3 /home/hanh.buithi/pytorch/yolov5/train.py
+```
 
 Run bash file
 ```
