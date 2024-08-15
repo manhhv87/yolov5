@@ -5,9 +5,6 @@ It is a crop rows detection method using the object detection model.
 3. 🤗High accuracy: The average error angle of the detection lines is 1.88◦, which can meet the accuracy requirements of field navigation.
 
 # Installation
-
-We provide installation instructions for ImageNet classification experiments here.
-
 ## Dependency Setup
 
 Create docker [Pytorch](https://pytorch.org/)>=1.8.0, [torchvision](https://pytorch.org/vision/stable/index.html)>=0.9.0. For example:
