@@ -8,6 +8,7 @@ It is a crop rows detection method using the object detection model.
 ## Dependency Setup
 
 Create docker [Pytorch](https://pytorch.org/)>=1.8.0, [torchvision](https://pytorch.org/vision/stable/index.html)>=0.9.0. For example:
+
 [https://hub.docker.com/r/rapidsai/rapidsai/tags](https://hub.docker.com/r/rapidsai/rapidsai/tags)
 ```
 module load singularity
