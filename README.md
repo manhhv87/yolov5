@@ -136,8 +136,8 @@ Thanks to the contribution, the code is based on https://github.com/ultralytics/
 
     # 1. Download the trained weights and training log files.
     The trained model is uploaded on https://drive.google.com/file/d/1uca8t8SYReriOtuzo5_RZsCJqb2ggmte/view?usp=sharing. Model and training logs can be obtained after unzipping.
-    # 2. Install the requirment.txt: ```pip install -r requirements.txt```
-    # 3. Run ```python detect.py --weights runs/train/exp/weights/best.pt --source test_video/1.mp4```
+    # 2. Install the requirment.txt: `pip install -r requirements.txt`
+    # 3. Run `python detect.py --weights runs/train/exp/weights/best.pt --source test_video/1.mp4`
     We have prepared 5 videos for testing, the root is test_video/*.mp4(avi). Images format has not been accepted yet.
     # 4. Change the test video.
     If you want to change the test video, you have to revise line 300 in detect.py
