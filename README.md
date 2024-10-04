@@ -100,37 +100,6 @@ Run bash file
 ```
 sbatch submit.sh
 ```
-
-# Architecture
-<div align=center>
-<img width="1113" alt="1702287039880" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/6f859450-be25-4491-8f4a-8ff0b7e41cee">
-</div>
-
-# Labeled images
-<div align=center>
-<img width="1040" alt="1702287116895" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/4e3a9b4c-a0f1-4df3-9d84-5398b92d3b17">
-</div>
-
-# Image processing
-
-<div align=center>
-<img width="1000" alt="1702292437924" src="https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/15d2796c-7b3b-4374-b820-28833f42abc0">
-</div>
-
-# Results
-
-<div align=center>
-  
-https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/b091a076-273c-48ff-a5ab-d73d31c4d6f2
-
-</div>
-
-<div align=center>
-  
-https://github.com/WoodratTradeCo/crop-rows-detection/assets/38500652/53440847-a97e-406d-b26f-96e7a5d99cd9
-
-</div>
-
 # Usage (How to test our model)
 Thanks to the contribution, the code is based on https://github.com/ultralytics/yolov5. 
 
