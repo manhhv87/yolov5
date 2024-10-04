@@ -142,21 +142,3 @@ Thanks to the contribution, the code is based on https://github.com/ultralytics/
     # 4. Change the test video.
     If you want to change the test video, you have to revise line 300 in detect.py
 
-
-# NOTE:
-1. We shared the part of our datasets. In this project, we trained 1500 images. It is sorry that we cannot share all the datasets. But you can still check some typical images in the folder "mydata/images/train". The training log is shown in "runs/train/exp1".
-2. It is noted that we just provide a solution for crop row detection if you want to run the code in your own data. We strongly suggest you to make some datasets to train your own data to ensure the performance of the model.
-
-If you find this code useful to your research, please cite our paper in the following BibTeX:
-
-    @article{yang2023real,
-      title={Real-time detection of crop rows in maize fields based on autonomous extraction of ROI},
-      author={Yang, Yang and Zhou, Yang and Yue, Xuan and Zhang, Gang and Wen, Xing and Ma, Biao and Xu, Liangyuan and Chen, Liqing},
-      journal={Expert Systems with Applications},
-      volume={213},
-      pages={118826},
-      year={2023},
-      publisher={Elsevier}
-    }
-
-
